@@ -21,7 +21,7 @@ const Authentication: React.FC<AuthenticationProps> = ({}) => {
   if (error) {
     return (
       <div>
-        <p>Error</p>
+        <p>{error.name}</p>
       </div>
     );
   }

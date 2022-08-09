@@ -15,7 +15,7 @@ interface PasswordInputProps {
   name?: string;
 }
 
-export const PasswordInput: React.FC<PasswordInputProps> = ({ name, title }) => {
+const PasswordInput: React.FC<PasswordInputProps> = ({ name, title }) => {
   const [showPassword, setShowPassword] = React.useState(false);
   const handleShowPassword = () => setShowPassword(!showPassword);
 
@@ -40,3 +40,5 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({ name, title }) => 
     </Field>
   );
 };
+
+export default PasswordInput;

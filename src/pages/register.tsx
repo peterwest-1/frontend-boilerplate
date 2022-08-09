@@ -14,7 +14,8 @@ import { NextPage } from "next";
 import { withUrqlClient } from "next-urql";
 import { useRouter } from "next/router";
 import React from "react";
-import { PasswordInput } from "../components/PasswordInput";
+import PasswordInput from "../components/PasswordInput";
+
 import { Wrapper } from "../components/Wrapper";
 import { AuthenticationInput, useRegisterMutation } from "../generated/graphql";
 import { createURQLClient } from "../util/createURQLClient";

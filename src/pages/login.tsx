@@ -1,11 +1,13 @@
 import {
   Button,
+  Flex,
   FormControl,
   FormErrorMessage,
   FormHelperText,
   FormLabel,
   Heading,
   Input,
+  Spacer,
   Spinner,
 } from "@chakra-ui/react";
 
@@ -13,11 +15,16 @@ import { Field, Form, Formik } from "formik";
 import { withUrqlClient } from "next-urql";
 import { useRouter } from "next/router";
 import React from "react";
+import LinkButton from "../components/LinkButton";
 import PasswordInput from "../components/PasswordInput";
 import { Wrapper } from "../components/Wrapper";
+import { Link } from "@chakra-ui/react";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { AuthenticationInput, useLoginMutation } from "../generated/graphql";
 import { createURQLClient } from "../util/createURQLClient";
 import { toErrorMap } from "../util/toErrorMap";
+import NextLink from "next/link";
+import { InputField } from "../components/InputField";
 
 interface LoginProps {}
 
@@ -39,8 +46,7 @@ const Login: React.FC<LoginProps> = ({}) => {
 
   return (
     <Wrapper variant="small">
-      <Heading>Login</Heading>
-
+      <Heading mb={5}>Login</Heading>
       <Formik<AuthenticationInput>
         initialValues={initialValues}
         onSubmit={async (values, { setErrors }) => {
@@ -59,22 +65,19 @@ const Login: React.FC<LoginProps> = ({}) => {
         }}
       >
         <Form>
-          <Field name="email">
-            {({ field, form }: any) => (
-              <FormControl isInvalid={form.errors.name && form.touched.name} isRequired>
-                <FormLabel htmlFor="email">Email Address</FormLabel>
-                <Input {...field} id="email" />
-                <FormHelperText>We'll never share your email.</FormHelperText>
-                <FormErrorMessage>{form.errors.name}</FormErrorMessage>
-              </FormControl>
-            )}
-          </Field>
-
-          <PasswordInput title="Password" name="password" />
-
-          <Button mt={4} colorScheme="teal" type="submit">
-            Submit
-          </Button>
+          <Flex gap={2} flexDir={"column"}>
+            <InputField label="Email Address" name="email" type={"email"} />
+            <InputField label="Password" name="password" type={"password"} />
+          </Flex>
+          <Flex>
+            <NextLink href="/forgot-password">
+              <Link color={"gray"}>Forgot your password?</Link>
+            </NextLink>
+            <Spacer />
+            <Button mt={4} colorScheme="teal" type="submit">
+              Submit
+            </Button>
+          </Flex>
         </Form>
       </Formik>
     </Wrapper>

@@ -1,7 +1,19 @@
-import { Box, Button, FormControl, FormErrorMessage, FormHelperText, FormLabel, Input } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  FormControl,
+  FormErrorMessage,
+  FormHelperText,
+  FormLabel,
+  Heading,
+  Input,
+  Spacer,
+} from "@chakra-ui/react";
 import { Field, Form, Formik } from "formik";
 import { withUrqlClient } from "next-urql";
 import React, { useState } from "react";
+import { InputField } from "../components/InputField";
 import { Wrapper } from "../components/Wrapper";
 import { useForgotPasswordMutation } from "../generated/graphql";
 import { createURQLClient } from "../util/createURQLClient";
@@ -11,6 +23,7 @@ const ForgotPassword: React.FC<{}> = ({}) => {
   const [, forgotPassword] = useForgotPasswordMutation();
   return (
     <Wrapper variant="small">
+      <Heading mb={5}>Forgot Password</Heading>
       <Formik
         initialValues={{ email: "" }}
         onSubmit={(values) => {
@@ -23,19 +36,13 @@ const ForgotPassword: React.FC<{}> = ({}) => {
             <Box>If an account with that email exists, we will send it an email</Box>
           ) : (
             <Form>
-              <Field name="email">
-                {({ field, form }: any) => (
-                  <FormControl isInvalid={form.errors.name && form.touched.name} isRequired>
-                    <FormLabel htmlFor="email">Email Address</FormLabel>
-                    <Input {...field} id="email" />
-                    <FormHelperText>We'll never share your email.</FormHelperText>
-                    <FormErrorMessage>{form.errors.name}</FormErrorMessage>
-                  </FormControl>
-                )}
-              </Field>
-              <Button mt={4} type="submit" isLoading={isSubmitting} colorScheme="teal">
-                Forgot Password
-              </Button>
+              <InputField label="Email" name="email" type={"email"} />
+              <Flex>
+                <Spacer />
+                <Button mt={4} type="submit" isLoading={isSubmitting} colorScheme="teal">
+                  Submit
+                </Button>
+              </Flex>
             </Form>
           )
         }

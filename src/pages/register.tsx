@@ -1,38 +1,55 @@
 import {
+  Box,
   Button,
+  Flex,
   FormControl,
   FormErrorMessage,
   FormHelperText,
   FormLabel,
   Heading,
   Input,
-  Spinner,
+  Spacer,
 } from "@chakra-ui/react";
-import { getAuth } from "firebase/auth";
 import { Field, Form, Formik } from "formik";
 import { NextPage } from "next";
 import { withUrqlClient } from "next-urql";
 import { useRouter } from "next/router";
-import React from "react";
-import PasswordInput from "../components/PasswordInput";
 
+import { object, ref, string } from "yup";
+import { InputField } from "../components/InputField";
 import { Wrapper } from "../components/Wrapper";
-import { AuthenticationInput, useRegisterMutation } from "../generated/graphql";
+import { useRegisterMutation } from "../generated/graphql";
 import { createURQLClient } from "../util/createURQLClient";
 import { toErrorMap } from "../util/toErrorMap";
-
 const Register: NextPage = ({}) => {
   const router = useRouter();
 
   const [, register] = useRegisterMutation();
 
-  const initialValues: AuthenticationInput = { email: "", password: "" };
+  const validateEmail = () => {};
+  const validatePassword = () => {};
+
+  const Schema = object().shape({
+    email: string().email().required("This field is required"),
+    password: string().required("This field is required"),
+    confirmPassword: string()
+      .when("password", {
+        is: (val: string) => (val && val.length > 0 ? true : false),
+        then: string().oneOf([ref("password")], "Both password need to be the same"),
+      })
+      .required("This field is required"),
+  });
+
+  const initialValues: any = { email: "", password: "", confirmPassword: "" };
 
   return (
     <Wrapper variant="small">
-      <Heading>Register</Heading>
+      <Heading mb={5}>Register</Heading>
       <Formik
         initialValues={initialValues}
+        validationSchema={Schema}
+        validateOnChange={false}
+        validateOnBlur={false}
         onSubmit={async (values, { setErrors }) => {
           const response = await register({
             input: {
@@ -40,6 +57,7 @@ const Register: NextPage = ({}) => {
               password: values.password,
             },
           });
+          console.log(response.data);
 
           if (response.data?.register?.errors) {
             setErrors(toErrorMap(response.data?.register.errors));
@@ -48,25 +66,26 @@ const Register: NextPage = ({}) => {
           }
         }}
       >
-        <Form>
-          <Field name="email">
-            {({ field, form }: any) => (
-              <FormControl isInvalid={form.errors.name && form.touched.name} isRequired>
-                <FormLabel htmlFor="email">Email Address</FormLabel>
-                <Input {...field} id="email" />
-                <FormHelperText>We'll never share your email.</FormHelperText>
-                <FormErrorMessage>{form.errors.name}</FormErrorMessage>
-              </FormControl>
-            )}
-          </Field>
-
-          <PasswordInput title="Password" name="password" />
-          <PasswordInput title="Confirm Password" name="confirmPassword" />
-
-          <Button mt={4} colorScheme="teal" type="submit">
-            Submit
-          </Button>
-        </Form>
+        {({ isSubmitting }) => (
+          <Form>
+            <Flex gap={2} flexDir={"column"}>
+              <InputField
+                label="Email Address"
+                name="email"
+                helper="We'll never share your emal address"
+                type={"email"}
+              />
+              <InputField label="Password" name="password" type={"password"} />
+              <InputField label="Confirm Password" name="confirmPassword" type={"password"} />
+            </Flex>
+            <Flex>
+              <Spacer />
+              <Button mt={4} colorScheme="teal" type="submit" isLoading={isSubmitting}>
+                Submit
+              </Button>
+            </Flex>
+          </Form>
+        )}
       </Formik>
     </Wrapper>
   );
